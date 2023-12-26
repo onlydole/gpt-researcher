@@ -36,6 +36,10 @@ def startup_event():
 async def read_root(request: Request):
     return templates.TemplateResponse('index.html', {"request": request, "report": None})
 
+@app.get("/health")
+async def health_check():
+    return {"status": "alive"}
+
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
