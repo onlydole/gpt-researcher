@@ -10,10 +10,9 @@ class Config:
         """Initialize the config class."""
         self.config_file = config_file if config_file else os.getenv('CONFIG_FILE')
         self.retriever = os.getenv('SEARCH_RETRIEVER', "tavily")
-        self.embedding_provider = os.getenv('EMBEDDING_PROVIDER', 'openai')
-        self.llm_provider = os.getenv('LLM_PROVIDER', "openai")
-        self.fast_llm_model = os.getenv('FAST_LLM_MODEL', "gpt-3.5-turbo-16k")
-        self.smart_llm_model = os.getenv('SMART_LLM_MODEL', "gpt-4-turbo")
+        self.llm_provider = os.getenv('LLM_PROVIDER', "ChatOpenAI")
+        self.fast_llm_model = os.getenv('FAST_LLM_MODEL', "gpt-4-1106-preview")
+        self.smart_llm_model = os.getenv('SMART_LLM_MODEL', "gpt-4-1106-preview")
         self.fast_token_limit = int(os.getenv('FAST_TOKEN_LIMIT', 2000))
         self.smart_token_limit = int(os.getenv('SMART_TOKEN_LIMIT', 4000))
         self.browse_chunk_max_length = int(os.getenv('BROWSE_CHUNK_MAX_LENGTH', 8192))
