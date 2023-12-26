@@ -17,38 +17,36 @@ def get_retriever(retriever):
         retriever: Retriever class
 
     """
-    match retriever:
-        case "tavily":
-            from gpt_researcher.retrievers import TavilySearch
-            retriever = TavilySearch
-        case "tavily_news":
-            from gpt_researcher.retrievers import TavilyNews
-            retriever = TavilyNews
-        case "google":
-            from gpt_researcher.retrievers import GoogleSearch
-            retriever = GoogleSearch
-        case "searx":
-            from gpt_researcher.retrievers import SearxSearch
-            retriever = SearxSearch
-        case "serpapi":
-            raise NotImplementedError(
-                "SerpApiSearch is not fully implemented yet.")
-            from gpt_researcher.retrievers import SerpApiSearch
-            retriever = SerpApiSearch
-        case "googleSerp":
-            from gpt_researcher.retrievers import SerperSearch
-            retriever = SerperSearch
-        case "duckduckgo":
-            from gpt_researcher.retrievers import Duckduckgo
-            retriever = Duckduckgo
-        case "BingSearch":
-            from gpt_researcher.retrievers import BingSearch
-            retriever = BingSearch
-
-        case _:
-            raise Exception("Retriever not found.")
+    if retriever == "tavily":
+        from gpt_researcher.retrievers import TavilySearch
+        retriever = TavilySearch
+    elif retriever == "tavily_news":
+        from gpt_researcher.retrievers import TavilyNews
+        retriever = TavilyNews
+    elif retriever == "google":
+        from gpt_researcher.retrievers import GoogleSearch
+        retriever = GoogleSearch
+    elif retriever == "searx":
+        from gpt_researcher.retrievers import SearxSearch
+        retriever = SearxSearch
+    elif retriever == "serpapi":
+        raise NotImplementedError("SerpApiSearch is not fully implemented yet.")
+        # from gpt_researcher.retrievers import SerpApiSearch
+        # retriever = SerpApiSearch
+    elif retriever == "googleSerp":
+        from gpt_researcher.retrievers import SerperSearch
+        retriever = SerperSearch
+    elif retriever == "duckduckgo":
+        from gpt_researcher.retrievers import Duckduckgo
+        retriever = Duckduckgo
+    elif retriever == "BingSearch":
+        from gpt_researcher.retrievers import BingSearch
+        retriever = BingSearch
+    else:
+        raise Exception("Retriever not found.")
 
     return retriever
+
 
 
 async def choose_agent(query, cfg):
