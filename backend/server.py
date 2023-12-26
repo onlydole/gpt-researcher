@@ -32,6 +32,10 @@ async def read_root(request: Request):
 @app.get("/health")
 async def health_check():
     return {"status": "alive"}
+<<<<<<< HEAD
+=======
+
+>>>>>>> aacffdf (Minor updates)
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
