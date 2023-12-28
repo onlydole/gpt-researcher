@@ -14,8 +14,7 @@ env.bak/
 venv.bak/
 
 #Ignore generated outputs
-outputs/
-
+outputs/*
 #Ignore pycache
 **/__pycache__/
 
