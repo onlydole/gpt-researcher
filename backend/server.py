@@ -19,11 +19,7 @@ app = FastAPI()
 
 app.mount("/site", StaticFiles(directory="./frontend"), name="site")
 app.mount("/static", StaticFiles(directory="./frontend/static"), name="static")
-<<<<<<< HEAD
 app.mount("/outputs", StaticFiles(directory="./outputs"), name="outputs")
-=======
-app.mount("/outputs", StaticFiles(directory="outputs"), name="outputs")
->>>>>>> 124877b (Enhance Server directives)
 
 templates = Jinja2Templates(directory="./frontend")
 
