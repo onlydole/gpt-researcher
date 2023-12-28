@@ -14,8 +14,12 @@ env.bak/
 venv.bak/
 
 #Ignore generated outputs
+<<<<<<< HEAD
 outputs/*.pdf
 outputs/*.md
+=======
+outputs/*
+>>>>>>> 08c024f (Update .gitignore to only ignore generated PDF assets)
 #Ignore pycache
 **/__pycache__/
 
