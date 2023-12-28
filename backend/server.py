@@ -19,7 +19,7 @@ app = FastAPI()
 
 app.mount("/site", StaticFiles(directory="./frontend"), name="site")
 app.mount("/static", StaticFiles(directory="./frontend/static"), name="static")
-app.mount("/outputs", StaticFiles(directory="./outputs"), name="outputs")
+app.mount("/outputs", StaticFiles(directory="outputs"), name="outputs")
 
 templates = Jinja2Templates(directory="./frontend")
 
@@ -35,8 +35,11 @@ async def health_check():
 <<<<<<< HEAD
 =======
 
+<<<<<<< HEAD
 >>>>>>> aacffdf (Minor updates)
 
+=======
+>>>>>>> 124877b (Enhance Server directives)
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
