@@ -1,17 +1,16 @@
 FROM python:3.11.4-slim-bullseye as install-browser
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  chromium \
-  firefox-esr \
-  wget \
-  && apt-get satisfy -y "chromium, chromium-driver (>= 115.0)" \
+RUN apt-get update \
+  && apt-get satisfy -y \
+  "chromium, chromium-driver (>= 115.0)" \
+  && chromium --version && chromedriver --version
+
+RUN apt-get update \
+  && apt-get install -y --fix-missing firefox-esr wget \
   && wget https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz \
   && tar -xvzf geckodriver* \
   && chmod +x geckodriver \
-  && mv geckodriver /usr/local/bin/ \
-  && rm geckodriver-v0.33.0-linux64.tar.gz \
-  && rm -rf /var/lib/apt/lists/* \
-  && chromium --version && chromedriver --version
+  && mv geckodriver /usr/local/bin/
 
 FROM install-browser as gpt-researcher-install
 
