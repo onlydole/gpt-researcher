@@ -8,29 +8,13 @@
   100% {
     background-position: 0 50%;
   }
-  0% {
-    background-position: 0 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0 50%;
-  }
 }
 
 html {
   scroll-behavior: smooth;
-  scroll-behavior: smooth;
 }
 
 body {
-  font-family: "Montserrat", sans-serif;
-  color: #fff;
-  line-height: 1.6;
-  background-size: 200% 200%;
-  background-image: linear-gradient(45deg, #151a2d, #2d284d, #151a2d);
-  animation: gradientBG 10s ease infinite;
   font-family: "Montserrat", sans-serif;
   color: #fff;
   line-height: 1.6;
@@ -45,17 +29,9 @@ body {
   align-items: center;
   height: 100vh;
   text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  text-align: center;
 }
 
 .landing h1 {
-  font-size: 3.5rem;
-  font-weight: 700;
-  margin-bottom: 2rem;
   font-size: 3.5rem;
   font-weight: 700;
   margin-bottom: 2rem;
@@ -64,21 +40,12 @@ body {
 .landing p {
   font-size: 1.5rem;
   font-weight: 400;
-  max-width: 500px;
-  margin: auto auto 2rem auto;
-  font-size: 1.5rem;
-  font-weight: 400;
-  max-width: 500px;
+  max-width: 1000px;
+  padding: 0 25px 0 25px;
   margin: auto auto 2rem auto;
 }
 
 .container {
-  padding: 20px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease-in-out;
-  margin: auto auto 180px auto;
   padding: 20px;
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
@@ -90,8 +57,6 @@ body {
 .container:hover {
   transform: scale(1.01);
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-  transform: scale(1.01);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
 }
 
 input,
@@ -102,24 +67,8 @@ select,
   border: none;
   color: #fff;
   transition: all 0.3s ease-in-out;
-input,
-select,
-#output,
-#reportContainer {
-  background-color: rgba(255, 255, 255, 0.1);
-  border: none;
-  color: #fff;
-  transition: all 0.3s ease-in-out;
 }
 
-input:hover,
-input:focus,
-select:hover,
-select:focus {
-  background-color: #dfe4ea;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease-in-out;
 input:hover,
 input:focus,
 select:hover,
@@ -134,15 +83,9 @@ select:focus {
   background: linear-gradient(to right, #0062cc, #007bff);
   border: none;
   transition: all 0.3s ease-in-out;
-  background: linear-gradient(to right, #0062cc, #007bff);
-  border: none;
-  transition: all 0.3s ease-in-out;
 }
 
 .btn-secondary {
-  background: linear-gradient(to right, #6c757d, #6c757d);
-  border: none;
-  transition: all 0.3s ease-in-out;
   background: linear-gradient(to right, #6c757d, #6c757d);
   border: none;
   transition: all 0.3s ease-in-out;
@@ -152,15 +95,9 @@ select:focus {
   opacity: 0.8;
   transform: scale(1.1);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-  opacity: 0.8;
-  transform: scale(1.1);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
 .agent_question {
-  font-size: 1.4rem;
-  font-weight: 500;
-  margin-bottom: 0.2rem;
   font-size: 1.4rem;
   font-weight: 500;
   margin-bottom: 0.2rem;
@@ -171,15 +108,7 @@ footer {
   left: 0;
   bottom: 0;
   width: 100%;
-  background: linear-gradient(to right, #151a2d, #111827);
-  color: white;
-  text-align: center;
-  padding: 10px 0;
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  background: linear-gradient(to right, #151a2d, #111827);
+  background-color: #1e272e;
   color: white;
   text-align: center;
   padding: 10px 0;
@@ -188,12 +117,11 @@ footer {
 footer p {
   margin-top: 5px;
   margin-bottom: 0;
+  margin-top: 5px;
+  margin-bottom: 0;
 }
 
 .margin-div {
-  margin-top: 20px;
-  margin-bottom: 20px;
-  padding: 25px;
   margin-top: 20px;
   margin-bottom: 20px;
   padding: 25px;
@@ -201,13 +129,10 @@ footer p {
 
 .images_div {
   padding: 0 25px 0 25px;
+  padding: 0 25px 0 25px;
 }
 
 .agent_response {
-  background-color: #747d8c;
-  margin: 10px;
-  padding: 10px;
-  border-radius: 12px;
   background-color: #747d8c;
   margin: 10px;
   padding: 10px;
@@ -221,23 +146,9 @@ footer p {
   margin-bottom: 10px;
   margin-top: 10px;
   border-radius: 12px;
-  height: 300px;
-  overflow: auto;
-  padding: 10px;
-  margin-bottom: 10px;
-  margin-top: 10px;
-  border-radius: 12px;
 }
 
 #reportContainer {
-  font-family: "Montserrat", sans-serif;
-  font-size: 18px !important;
-  background-color: rgba(255, 255, 255, 0.1);
-  border: none;
-  color: #fff;
-  transition: all 0.3s ease-in-out;
-  padding: 25px;
-  border-radius: 12px;
   font-family: "Montserrat", sans-serif;
   font-size: 18px !important;
   background-color: rgba(255, 255, 255, 0.1);
@@ -255,21 +166,9 @@ footer p {
   border: 1px solid #ccc;
   padding: 5px;
   border-radius: 5px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  border: 1px solid #ccc;
-  padding: 5px;
-  border-radius: 5px;
 }
 
 .tag {
-  background-color: #007bff;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 3px;
-  display: flex;
-  align-items: center;
   background-color: #007bff;
   color: white;
   padding: 5px 10px;
@@ -282,33 +181,31 @@ footer p {
   margin-left: 10px;
   cursor: pointer;
   font-weight: bold;
-  margin-left: 10px;
-  cursor: pointer;
-  font-weight: bold;
 }
 
 .tag-input {
   border: none;
   outline: none;
   flex-grow: 1;
-  border: none;
-  outline: none;
-  flex-grow: 1;
 }
 
 footer a {
-  color: #14b8a6;
+  color: #ffffff;
   font-weight: bold;
   text-decoration: none;
 }
 
 a:hover {
   text-decoration: underline;
-  color: #0d9488;
 }
 
 /* Add or modify these styles at the end of the file */
 #selectedImagesContainer {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 20px;
+  color: #fff; /* Ensure text is visible */
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 15px;
@@ -320,9 +217,23 @@ a:hover {
   margin-top: 0;
   margin-bottom: 10px;
   color: #fff; /* Ensure header is visible */
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #fff; /* Ensure header is visible */
 }
 
 .image-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
   position: fixed;
   top: 0;
   left: 0;
@@ -342,6 +253,11 @@ a:hover {
   object-fit: contain;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-width: 90%;
+  max-height: 80%;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .image-dialog button {
@@ -354,8 +270,18 @@ a:hover {
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s ease;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
 }
 
 .image-dialog button:hover {
+  background-color: #0056b3;
   background-color: #0056b3;
 }
