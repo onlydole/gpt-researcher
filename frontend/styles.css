@@ -40,8 +40,7 @@ body {
 .landing p {
   font-size: 1.5rem;
   font-weight: 400;
-  max-width: 1000px;
-  padding: 0 25px 0 25px;
+  max-width: 500px;
   margin: auto auto 2rem auto;
 }
 
@@ -108,7 +107,7 @@ footer {
   left: 0;
   bottom: 0;
   width: 100%;
-  background-color: #1e272e;
+  background: linear-gradient(to right, #151a2d, #111827);
   color: white;
   text-align: center;
   padding: 10px 0;
