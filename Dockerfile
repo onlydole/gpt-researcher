@@ -1,21 +1,23 @@
 # Stage 1: Browser and build tools installation
 FROM python:3.11.4-slim-bullseye AS install-browser
 
-# Install Chromium, Chromedriver, Firefox, Geckodriver, and build tools in one layer
-RUN apt-get update \
-    && apt-get install -y gnupg wget ca-certificates --no-install-recommends \
-    && wget -qO - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update \
-    && apt-get install -y google-chrome-stable chromium-driver \
-    && google-chrome --version && chromedriver --version \
-    && apt-get install -y --no-install-recommends firefox-esr build-essential \
-    && wget https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz \
-    && tar -xvzf geckodriver-v0.33.0-linux64.tar.gz \
-    && chmod +x geckodriver \
-    && mv geckodriver /usr/local/bin/ \
-    && rm geckodriver-v0.33.0-linux64.tar.gz \
-    && rm -rf /var/lib/apt/lists/*  # Clean up apt lists to reduce image size
+# Combine RUN commands to reduce layers and clean up after installations
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends \
+  chromium \
+  chromium-driver \
+  firefox-esr \
+  wget && \
+  wget https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz && \
+  tar -xvzf geckodriver* && \
+  chmod +x geckodriver && \
+  mv geckodriver /usr/local/bin/ && \
+  rm -rf /var/lib/apt/lists/* geckodriver*  # Clean up
+
+# Install build tools
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends build-essential && \
+  rm -rf /var/lib/apt/lists/*
 
 # Stage 2: Python dependencies installation
 FROM install-browser AS gpt-researcher-install
@@ -25,22 +27,27 @@ WORKDIR /usr/src/app
 
 # Copy and install Python dependencies in a single layer to optimize cache usage
 COPY ./requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt  # Use --no-cache-dir to reduce size
+
 COPY ./multi_agents/requirements.txt ./multi_agents/requirements.txt
+RUN pip install --no-cache-dir -r multi_agents/requirements.txt  # Use --no-cache-dir to reduce size
 
 RUN pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir -r multi_agents/requirements.txt
+  pip install --no-cache-dir -r multi_agents/requirements.txt
 
 # Stage 3: Final stage with non-root user and app
 FROM gpt-researcher-install AS gpt-researcher
 
-# Create a non-root user for security
+# Use environment variables for API keys (defaults can be overridden at runtime)
+ARG OPENAI_API_KEY
+ARG TAVILY_API_KEY
+
+ENV OPENAI_API_KEY=${OPENAI_API_KEY}
+ENV TAVILY_API_KEY=${TAVILY_API_KEY}
+
 RUN useradd -ms /bin/bash gpt-researcher && \
-    chown -R gpt-researcher:gpt-researcher /usr/src/app && \
-    # Add these lines to create and set permissions for outputs directory
-    mkdir -p /usr/src/app/outputs && \
-    chown -R gpt-researcher:gpt-researcher /usr/src/app/outputs && \
-    chmod 777 /usr/src/app/outputs
-    
+  chown -R gpt-researcher:gpt-researcher /usr/src/app
+
 USER gpt-researcher
 WORKDIR /usr/src/app
 
@@ -49,6 +56,4 @@ COPY --chown=gpt-researcher:gpt-researcher ./ ./
 
 # Expose the application's port
 EXPOSE 8000
-
-# Define the default command to run the application
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
