@@ -14,7 +14,7 @@ DEFAULT_CONFIG: DefaultConfig = {
     "OLLAMA_BASE_URL": None,
     "DEFAULT_LLM_MODEL": "gpt-4o-mini",
     "FAST_LLM_MODEL": "gpt-4o-mini",
-    "SMART_LLM_MODEL": "gpt-4o-2024-08-06",
+    "SMART_LLM_MODEL": "gpt-4o",
     "FAST_TOKEN_LIMIT": 2000,
     "SMART_TOKEN_LIMIT": 4000,
     "BROWSE_CHUNK_MAX_LENGTH": 8192,
