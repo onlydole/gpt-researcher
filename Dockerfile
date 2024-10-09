@@ -1,17 +1,23 @@
 # Stage 1: Browser and build tools installation
 FROM python:3.11.4-slim-bullseye AS install-browser
 
-# Install Chromium, Chromedriver, Firefox, Geckodriver, and build tools in one layer
+# Combine RUN commands to reduce layers and clean up after installations
 RUN apt-get update && \
-    apt-get satisfy -y "chromium, chromium-driver (>= 115.0)" && \
-    apt-get install -y --no-install-recommends firefox-esr wget build-essential && \
-    wget https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz && \
-    tar -xvzf geckodriver-v0.33.0-linux64.tar.gz && \
-    chmod +x geckodriver && \
-    mv geckodriver /usr/local/bin/ && \
-    rm geckodriver-v0.33.0-linux64.tar.gz && \
-    chromium --version && chromedriver --version && \
-    rm -rf /var/lib/apt/lists/*  # Clean up apt lists to reduce image size
+  apt-get install -y --no-install-recommends \
+  chromium \
+  chromium-driver \
+  firefox-esr \
+  wget && \
+  wget https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz && \
+  tar -xvzf geckodriver* && \
+  chmod +x geckodriver && \
+  mv geckodriver /usr/local/bin/ && \
+  rm -rf /var/lib/apt/lists/* geckodriver*  # Clean up
+
+# Install build tools
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends build-essential && \
+  rm -rf /var/lib/apt/lists/*
 
 # Stage 2: Python dependencies installation
 FROM install-browser AS gpt-researcher-install
@@ -21,10 +27,13 @@ WORKDIR /usr/src/app
 
 # Copy and install Python dependencies in a single layer to optimize cache usage
 COPY ./requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt  # Use --no-cache-dir to reduce size
+
 COPY ./multi_agents/requirements.txt ./multi_agents/requirements.txt
+RUN pip install --no-cache-dir -r multi_agents/requirements.txt  # Use --no-cache-dir to reduce size
 
 RUN pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir -r multi_agents/requirements.txt
+  pip install --no-cache-dir -r multi_agents/requirements.txt
 
 # Stage 3: Final stage with non-root user and app
 FROM gpt-researcher-install AS gpt-researcher
@@ -36,9 +45,8 @@ ARG TAVILY_API_KEY
 ENV OPENAI_API_KEY=${OPENAI_API_KEY}
 ENV TAVILY_API_KEY=${TAVILY_API_KEY}
 
-# Create a non-root user for security
 RUN useradd -ms /bin/bash gpt-researcher && \
-    chown -R gpt-researcher:gpt-researcher /usr/src/app
+  chown -R gpt-researcher:gpt-researcher /usr/src/app
 
 USER gpt-researcher
 WORKDIR /usr/src/app
@@ -48,6 +56,4 @@ COPY --chown=gpt-researcher:gpt-researcher ./ ./
 
 # Expose the application's port
 EXPOSE 8000
-
-# Define the default command to run the application
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
