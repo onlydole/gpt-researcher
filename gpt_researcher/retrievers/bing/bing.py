@@ -4,7 +4,7 @@
 import os
 import requests
 import json
-
+import logging
 
 class BingSearch():
     """
