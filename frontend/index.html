@@ -115,7 +115,7 @@
                     </option>
                 </select>
             </div>
-            <div class="form-group">
+            <div class="form-group d-none">
                 <label for="report_source" class="agent-question">What sources would you like me to research
                     from?</label>
                 <p class="text-left mt-0 pt-0" style="font-size: 0.7rem;">You can now do research on local documents as
@@ -160,11 +160,6 @@
     </main>
 
     <footer>
-        <p>
-            <a target="_blank" href="https://gptr.dev">Homepage</a> |
-            <a target="_blank" href="https://github.com/assafelovic/gpt-researcher">GitHub</a> |
-            <a target="_blank" href="https://discord.gg/spBgZmm3Xe">Discord</a>
-        </p>
         <p>GPT Researcher &copy; 2024</p>
     </footer>
 
@@ -175,15 +170,6 @@
         const btnShowAuto = document.getElementById('btnShowAuto');
         const autoAgentDiv = document.getElementById('autoAgentDiv');
         const agentChoices = document.getElementsByClassName('agent-choices');
-
-        /**
-        btnChoose.addEventListener('click', function () {
-            btnShowAuto.style.display = 'inline-block';
-            btnChoose.style.display = 'none';
-            autoAgentDiv.style.display = 'none';
-            agentChoices[0].style.display = 'flex';
-        });
-        **/
 
         btnShowAuto.addEventListener('click', function () {
             btnShowAuto.style.display = 'none';
