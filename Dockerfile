@@ -1,54 +1,68 @@
-# Stage 1: Browser and build tools installation
-FROM python:3.11.4-slim-bullseye AS install-browser
+# Stage 1: Build environment
+FROM python:3.12-slim-bullseye AS builder
 
-# Install Chromium, Chromedriver, Firefox, Geckodriver, and build tools in one layer
-RUN apt-get update \
-    && apt-get install -y gnupg wget ca-certificates --no-install-recommends \
-    && wget -qO - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update \
-    && apt-get install -y google-chrome-stable chromium-driver \
-    && google-chrome --version && chromedriver --version \
-    && apt-get install -y --no-install-recommends firefox-esr build-essential \
-    && wget https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz \
-    && tar -xvzf geckodriver-v0.33.0-linux64.tar.gz \
-    && chmod +x geckodriver \
-    && mv geckodriver /usr/local/bin/ \
-    && rm geckodriver-v0.33.0-linux64.tar.gz \
-    && rm -rf /var/lib/apt/lists/*  # Clean up apt lists to reduce image size
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PIP_NO_CACHE_DIR=1
 
-# Stage 2: Python dependencies installation
-FROM install-browser AS gpt-researcher-install
+WORKDIR /build
 
-ENV PIP_ROOT_USER_ACTION=ignore
-WORKDIR /usr/src/app
+# Install build dependencies and browsers in a single layer
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  chromium \
+  chromium-driver \
+  firefox-esr \
+  wget \
+  build-essential \
+  && wget -q https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz \
+  && tar -xzf geckodriver-v0.33.0-linux64.tar.gz \
+  && mv geckodriver /usr/local/bin/ \
+  && rm geckodriver-v0.33.0-linux64.tar.gz \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
-# Copy and install Python dependencies in a single layer to optimize cache usage
-COPY ./requirements.txt ./requirements.txt
-COPY ./multi_agents/requirements.txt ./multi_agents/requirements.txt
+# Copy only requirements files first to leverage cache
+COPY requirements.txt .
+COPY multi_agents/requirements.txt ./multi_agents/
 
-RUN pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir -r multi_agents/requirements.txt
+# Install Python dependencies
+RUN pip install --upgrade pip && \
+  pip install -r requirements.txt -r multi_agents/requirements.txt
 
-# Stage 3: Final stage with non-root user and app
-FROM gpt-researcher-install AS gpt-researcher
+# Stage 2: Final runtime image
+FROM python:3.12-slim-bullseye
 
-# Create a non-root user for security
-RUN useradd -ms /bin/bash gpt-researcher && \
-    chown -R gpt-researcher:gpt-researcher /usr/src/app && \
-    # Add these lines to create and set permissions for outputs directory
-    mkdir -p /usr/src/app/outputs && \
-    chown -R gpt-researcher:gpt-researcher /usr/src/app/outputs && \
-    chmod 777 /usr/src/app/outputs
-    
-USER gpt-researcher
-WORKDIR /usr/src/app
+# Set runtime environment variables
+ENV PYTHONUNBUFFERED=1 \
+  PYTHONDONTWRITEBYTECODE=1
 
-# Copy the rest of the application files with proper ownership
-COPY --chown=gpt-researcher:gpt-researcher ./ ./
+# Create non-root user
+RUN useradd -ms /bin/bash appuser
 
-# Expose the application's port
+# Install only runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  chromium \
+  chromium-driver \
+  firefox-esr \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
+# Copy geckodriver and Python packages from builder
+COPY --from=builder /usr/local/bin/geckodriver /usr/local/bin/
+COPY --from=builder /usr/local/lib/python3.12/site-packages/ /usr/local/lib/python3.12/site-packages/
+
+WORKDIR /app
+
+# Create outputs directory and set permissions
+RUN mkdir outputs && \
+  chown -R appuser:appuser /app && \
+  chmod -R 755 /app
+
+# Copy application code
+COPY --chown=appuser:appuser . .
+
+USER appuser
 EXPOSE 8000
 
-# Define the default command to run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
