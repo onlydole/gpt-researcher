@@ -347,13 +347,13 @@ IMPORTANT:Content and Sections Uniqueness:
 Assume the current date is {datetime.now(timezone.utc).strftime('%B %d, %Y')} if required.
 
 "IMPORTANT!":
+- Write the report in {language}.
 - The focus MUST be on the main topic! You MUST Leave out any information un-related to it!
 - Must NOT have any introduction, conclusion, summary or reference section.
 - You MUST include hyperlinks with markdown syntax ([url website](url)) related to the sentences wherever necessary.
 - You MUST mention the difference between the existing content and the new content in the report if you are adding the similar or same subsections wherever necessary.
 - The report should have a minimum length of {total_words} words.
 - Use an {tone.value} tone throughout the report.
-- Write the report in {language}.
 
 Do NOT add a conclusion section.
 """
