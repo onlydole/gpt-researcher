@@ -293,6 +293,7 @@ def generate_subtopic_report_prompt(
     max_subsections=5,
     total_words=800,
     tone: Tone = Tone.Objective,
+    language: str = "english",
 ) -> str:
     return f"""
 Context:
@@ -352,6 +353,7 @@ Assume the current date is {datetime.now(timezone.utc).strftime('%B %d, %Y')} if
 - You MUST mention the difference between the existing content and the new content in the report if you are adding the similar or same subsections wherever necessary.
 - The report should have a minimum length of {total_words} words.
 - Use an {tone.value} tone throughout the report.
+- Write the report in {language}.
 
 Do NOT add a conclusion section.
 """
