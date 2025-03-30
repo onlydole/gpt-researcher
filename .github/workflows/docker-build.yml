@@ -64,7 +64,7 @@ jobs:
       - name: Build and push Container Image [NextJS]
         uses: docker/build-push-action@v6
         with:
-          file: Dockerfile.dev
+          file: frontend/nextjs/Dockerfile.dev
           context: frontend/nextjs
           push: ${{ github.event_name == 'push' }}
           tags: ${{ steps.meta.outputs.tags }}
