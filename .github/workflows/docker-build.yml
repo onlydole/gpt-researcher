@@ -38,6 +38,19 @@ jobs:
             type=semver,pattern={{major}}
             type=sha,format=long
 
+      - name: Set Docker metadata [NextJS]
+        id: metanext
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/onlydole/gpt-researcher/gpt-frontend
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha,format=long
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -67,8 +80,8 @@ jobs:
           file: frontend/nextjs/Dockerfile.dev
           context: frontend/nextjs
           push: ${{ github.event_name == 'push' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.metanext.outputs.tags }}
+          labels: ${{ steps.metanext.outputs.labels }}
           platforms: linux/amd64
           cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/onlydole/gpt-researcher-frontend-cache
           cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/onlydole/gpt-researcher-frontend-cache,mode=max,ignore-error=true
