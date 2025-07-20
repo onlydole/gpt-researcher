@@ -1,45 +1,103 @@
-name: GPTR tests
-run-name: ${{ github.actor }} ran the GPTR tests flow
-permissions:
-  contents: read
-  pull-requests: write
+name: build-and-deploy-gpt
 on:
-  workflow_dispatch:  # Add this line to enable manual triggering
-  # pull_request:
-  #   types: [opened, synchronize]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "0 0 * * TUE"
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**/README.md"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  docker:
+  push-ghcr:
+    name: Build and push image
     runs-on: ubuntu-latest
-    environment: tests  # Specify the environment to use for this job
-    env:
-      # Ensure these environment variables are set for the entire job
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
-      LANGCHAIN_API_KEY: ${{ secrets.LANGCHAIN_API_KEY }}
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
     steps:
-      - name: Git checkout
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/onlydole/gpt-researcher/gpt
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha,format=long
+
+      - name: Set Docker metadata [NextJS]
+        id: metanext
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/onlydole/gpt-researcher/gpt-frontend
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha,format=long
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log into package registry
+        uses: docker/login-action@v3
         with:
-          driver: docker
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Build Docker images
-      #   uses: docker/build-push-action@v4
-      #   with:
-      #     push: false
-      #     tags: gptresearcher/gpt-researcher:latest
-      #     file: Dockerfile          
+      - name: Build and push Container Image [GPT Researcher]
+        uses: docker/build-push-action@v6
+        with:
+          push: ${{ github.event_name == 'push' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          provenance: mode=max
+          sbom: true
+          platforms: linux/amd64
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/onlydole/gpt-researcher-cache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/onlydole/gpt-researcher-cache,mode=max,ignore-error=true
 
-      - name: Set up Docker Compose
-        run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-      - name: Run tests with Docker Compose
-        run: |
-          docker-compose --profile test run --rm gpt-researcher-tests
+      - name: Build and push Container Image [NextJS]
+        uses: docker/build-push-action@v6
+        with:
+          file: frontend/nextjs/Dockerfile.dev
+          context: frontend/nextjs
+          push: ${{ github.event_name == 'push' }}
+          tags: ${{ steps.metanext.outputs.tags }}
+          labels: ${{ steps.metanext.outputs.labels }}
+          provenance: mode=max
+          sbom: true
+          platforms: linux/amd64
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/onlydole/gpt-researcher-frontend-cache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/onlydole/gpt-researcher-frontend-cache,mode=max,ignore-error=true
+
+  deploy-digitalocean:
+    name: Deploy to DigitalOcean
+    needs: push-ghcr
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: DigitalOcean App Deployment
+        uses: digitalocean/app_action@v1.1.6
+        with:
+          app_name: gpt-researcher
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
