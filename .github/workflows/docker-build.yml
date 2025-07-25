@@ -3,7 +3,7 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: "0 0 * * TUE"
+    - cron: "0 0 * * MON"
   push:
     branches: [main]
     paths-ignore:
